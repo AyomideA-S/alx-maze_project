@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
+/* Screen dimension constants */
+#define SCREEN_WIDTH 1260
+#define SCREEN_HEIGHT 720
+
 /**
  * struct SDL_Instance - Typedef for struct of type SDL_Instance
  * @window: SDL Window
@@ -18,5 +22,6 @@ typedef struct SDL_Instance
 } SDL_Instance;
 
 int init_instance(SDL_Instance *);
+void draw_something(SDL_Instance);
 
 #endif /*_MAIN_H_*/

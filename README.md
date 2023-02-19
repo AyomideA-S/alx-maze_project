@@ -56,7 +56,7 @@ The goal of this project is to create a game in 3D using raycasting !
 7. Coding style + Documentation
 
     * Check if your code fits the [Holberton School coding style](https://github.com/holbertonschool/Betty/wiki)
-    * Check if your code is well documented and respect the [Holberton School documentation format](https://github.com/holbertonschool/Betty/blob/master/kernel-doc.pl)
+    * Check if your code is well documented and respect the [Holberton School documentation format](https://github.com/holbertonschool/Betty/blob/master/betty-doc.pl)
 
     You can check all of this by yourself, just follow the instructions on this [repository](https://github.com/holbertonschool/Betty).
 

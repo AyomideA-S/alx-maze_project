@@ -2,7 +2,7 @@
 CC = gcc
 
 # SRC specifies the .c files
-SRC = src/main.c
+SRC = src/main.c src/window.c
 
 # OBJ specifies the .o files
 OBJ = $(SRC:.c=.o)
@@ -14,7 +14,7 @@ NAME = 'The Maze Project'
 RM = rm -f
 
 # CFLAGS specifies your favorite compiler flags
-CFLAGS = -Wall -Werror -Wextra -pedantic
+CFLAGS = -Wall -Werror -Wextra -pedantic -lSDL2main -lSDL2
 
 # LFLAGS specifies the linker flags
 # LFLAGS =
@@ -26,7 +26,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic
 # This rule builds our executable
 # Makefile should not compile if the header file main.h is missing
 all: include/main.h $(OBJ)
-	$(CC) $(OBJ) -o $(NAME)
+	$(CC) $(OBJ) $(CFLAGS) -o $(NAME)
 
 # This rule deletes all Emacs and Vim temporary files along with the executable
 clean:
