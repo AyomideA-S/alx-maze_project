@@ -13,3 +13,12 @@
 *.hex
 
 The\ Maze\ Project
+
+# VS Code
+.vscode
+
+# External references
+references
+
+# Test source file
+test.c
