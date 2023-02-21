@@ -51,8 +51,8 @@ ColorRGBA rgba_color_code(char *color)
  * @color: struct of type ColorRGBA containing the RGBA value of given color
  * @side: Side of the wall that was hit (NS or EW)
  */
-void color_walls(int **worldMap, int mapX, int mapY, ColorRGBA *color,
-				int side)
+void color_walls(int (*worldMap)[MAP_WIDTH], int mapX, int mapY,
+				ColorRGBA *color, int side)
 {
 	switch (worldMap[mapX][mapY])
 	{

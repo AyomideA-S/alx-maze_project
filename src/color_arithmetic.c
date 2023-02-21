@@ -9,11 +9,12 @@
 float handle_mod1(float target)
 {
 	if (target >= 1.0)
-		return (target - (abs(target)));
+		return (target - (fabs(target)));
 	else if (target <= -1.0)
-		return (target + (abs(target)) + 1);
+		return (target + (fabs(target)) + 1);
+	else
+		return (target);
 }
-
 
 /**
  * rgba_add - A function to add given values to the RGB and A of color

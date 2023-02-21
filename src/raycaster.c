@@ -19,36 +19,29 @@ int raycaster(Vector object, double *time, double *oldTime,
 		double rayDirX = object.dirX + object.planeX * cameraX;
 		double rayDirY = object.dirY + object.planeY * cameraX;
 		/* length of ray from one x or y-side to next x or y-side */
-		double deltaDistX = (rayDirX == 0) ? 1e30 : abs(1 / rayDirX);
-		double deltaDistY = (rayDirX == 0) ? 1e30 : abs(1 / rayDirY);
+		double deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
+		double deltaDistY = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirY);
 		/* which box of the map we're in */
 		int mapX = floor(object.posX);
 		int mapY = floor(object.posY);
-		/* World map */
-		int **worldMap = generate_map(MAP_WIDTH, MAP_HEIGHT);
 		/* length of ray from current position to next x or y-side */
-		double sideDistX;
-		double sideDistY;
-		double perpWallDist;
+		double sideDistX, sideDistY, perpWallDist;
 		/* what direction to step in x or y-direction (either +1 or -1) */
-		int stepX;
-		int stepY;
+		int stepX, stepY;
 		int hit = 0; /* was there a wall hit? */
 		int side; /* was a NS or a EW wall hit? */
 		ColorRGBA color; /* choose wall color */
 
-		calculate_distances(object, rayDirX, rayDirY, &sideDistX, &sideDistY,
-						&stepX, &stepY, mapX, mapY, deltaDistX, deltaDistY);
-		DDA(&hit, &side, &sideDistX, &sideDistY, deltaDistX, deltaDistY, &mapX,
-			&mapY, stepX, stepY, worldMap);
-		color_walls(worldMap, mapX, mapY, &color, side);
+		/* World map */
+		generate_map(object, rayDirX, rayDirY, &sideDistX, &sideDistY, &stepX,
+			&stepY, &mapX, &mapY, deltaDistX, deltaDistY, &color, &side, &hit);
 		Projection pixels = calcuate_projection(side, sideDistX, sideDistY,
 							deltaDistX, deltaDistY, &perpWallDist);
 		int drawStart = pixels.drawStart;
 		int drawEnd = pixels.drawEnd;
 		/* draw the pixels of the stripe as a vertical line */
-		verLine(x, drawStart, drawEnd, &color, &object);
-		fps_count(time, oldTime, &instance, &color);
+		verLine(x, drawStart, drawEnd, &color, instance);
+		fps_count(time, oldTime);
 	}
 	return (0);
 }
@@ -113,7 +106,7 @@ void calculate_distances(Vector object, double rayDirX, double rayDirY,
  */
 void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
 		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
-		int stepY, int **worldMap)
+		int stepY, int (*worldMap)[MAP_WIDTH])
 {
 	/* perform DDA */
 	while (*hit == 0)

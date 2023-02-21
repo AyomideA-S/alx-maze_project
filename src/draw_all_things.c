@@ -29,8 +29,8 @@ int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance)
 	if (y2 >= SCREEN_WIDTH)
 		y2 = SCREEN_HEIGHT - 1; /* clip */
 
-	Uint32 colorSDL = SDL_MapRGB(scr->format, color->red, color->green,
-								color->blue);
+	Uint32 colorSDL = SDL_MapRGBA(scr->format, color->red, color->green,
+								color->blue, (int) (255 * color->alpha));
 	Uint32 *bufp;
 
 	bufp = (Uint32 *)scr->pixels + y1 * scr->pitch / 4 + x;
@@ -49,14 +49,10 @@ int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance)
  *
  * @time: Time of curent frame in seconds
  * @oldTime: Time of previous frame in seconds
- * @instance: struct of type SDL_Instance
- * @color: struct containing the RGBA values of a given color
  * Return: Value of frame rate (FPS)
  */
-int fps_count(double *time, double *oldTime, SDL_Instance *instance,
-			ColorRGBA *color)
+int fps_count(double *time, double *oldTime)
 {
-	SDL_Surface *scr = instance->screenSurface;
 	/* timing for input and FPS counter */
 	*oldTime = *time;
 	*time = getTicks();
@@ -65,12 +61,10 @@ int fps_count(double *time, double *oldTime, SDL_Instance *instance,
 	double frameTime = (*time - *oldTime) / 1000.0;
 
 	printf("%lf", 1.0 / frameTime); /* FPS counter */
-	redraw(&scr);
-	cls(&scr, &color);
 
 	/* speed modifiers */
-	double moveSpeed = frameTime * 5.0; /* constant value in squares/second */
-	double rotSpeed = frameTime * 3.0; /* the constant value in rads/s */
+	/*double moveSpeed = frameTime * 5.0;*//*constant value in squares/second*/
+	/* double rotSpeed = frameTime * 3.0; */ /* the constant value in rads/s */
 
 	return (frameTime);
 }

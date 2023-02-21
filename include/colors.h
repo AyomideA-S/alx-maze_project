@@ -19,8 +19,6 @@ typedef struct ColorRGBA
 } ColorRGBA;
 
 ColorRGBA rgba_color_code(char *color);
-void color_walls(int **worldMap, int mapX, int mapY, ColorRGBA *color,
-				int side);
 ColorRGBA rgba_color_add(ColorRGBA color1, ColorRGBA color2);
 void rgba_add(ColorRGBA *color, int n, float a);
 ColorRGBA rgba_color_sub(ColorRGBA color1, ColorRGBA color2);

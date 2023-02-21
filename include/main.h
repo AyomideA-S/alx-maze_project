@@ -31,9 +31,27 @@ typedef struct SDL_Instance
 	SDL_Surface *screenSurface;
 } SDL_Instance;
 
-int init_instance(SDL_Instance *);
+int init_instance(SDL_Instance *instance);
 int raycaster(Vector object, double *time, double *oldTime,
 			SDL_Instance *instance);
-void draw_something(SDL_Instance);
+void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
+		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
+		int stepY, int (*worldMap)[MAP_WIDTH]);
+void draw_something(SDL_Instance instance);
+int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance);
+int fps_count(double *time, double *oldTime);
+unsigned long getTicks(void);
+
+/**
+ * color_walls - Assigns a color code to each integer case
+ *
+ * @worldMap: A 2-dimensional array of integer values
+ * @mapX: x-coordinate of current box of the map we're in
+ * @mapY: y-coordinate of current box of the map we're in
+ * @color: struct of type ColorRGBA containing the RGBA value of given color
+ * @side: Side of the wall that was hit (NS or EW)
+ */
+void color_walls(int (*worldMap)[MAP_WIDTH], int mapX, int mapY,
+				ColorRGBA *color, int side);
 
 #endif /*_MAIN_H_*/

@@ -36,22 +36,16 @@ typedef struct Projection
 	int drawEnd;
 } Projection;
 
-int *generate_map(int mapWidth, int mapHeight);
+void generate_map(Vector object, double rayDirX, double rayDirY,
+				double *sideDistX, double *sideDistY, int *stepX, int *stepY,
+				int *mapX, int *mapY, double deltaDistX, double deltaDistY,
+				ColorRGBA *color, int *side, int *hit);
 void calculate_distances(Vector object, double rayDirX, double rayDirY,
 						double *sideDistX, double *sideDistY, int *stepX,
 						int *stepY, int mapX, int mapY, double deltaDistX,
 						double deltaDistY);
-void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
-		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
-		int stepY, int **worldMap);
 Projection calcuate_projection(int side, double sideDistX, double sideDistY,
 						double deltaDistX, double deltaDistY,
 						double *perpWallDist);
-int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *object);
-int fps_count(double *time, double *oldTime, SDL_Instance *instance,
-			ColorRGBA *color);
-unsigned long getTicks(void);
-void redraw(SDL_Surface *scr);
-void cls(SDL_Surface *scr, ColorRGBA *color);
 
 #endif /* _RAYCASTER_H_ */
