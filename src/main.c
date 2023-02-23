@@ -8,26 +8,33 @@
 int main(void)
 {
 	SDL_Instance instance;
-	Vector player;
-	double time = 0; /* time of current frame */
-	double oldTime = 0; /* time of previous frame */
 
-	player.posX = 22;
-	player.posY = 12;
-	player.dirX = -1;
-	player.dirY = 0;
-	player.planeX = 0;
-	player.planeY = 0.66;
-
-	if (init_instance(&instance) != 0)
-		return (1);
-	while ("C is awesome")
+	/* Start up SDL and create window */
+	if (!initialize_SDL(&instance))
 	{
-		raycaster(player, &time, &oldTime, &instance);
-		SDL_SetRenderDrawColor(instance.renderer, 0, 0, 0, 0);
-		SDL_RenderClear(instance.renderer);
-		draw_something(instance);
-		SDL_RenderPresent(instance.renderer);
+		fprintf(stderr, "Failed to initialize!\n");
+	} else
+	{
+		/* Load media */
+		if (!loadMedia(&instance, "resources/images/hello_world.bmp"))
+		{
+			fprintf(stderr, "Failed to load media!\n");
+		} else
+		{
+			/* Hello world! */
+			draw_image(&instance);
+			/* Hack to get window to stay up */
+			keep_window();
+		}
 	}
+	/* Deallocate surface */
+	SDL_FreeSurface(instance.image);
+	instance.image = NULL;
+	/* Destroy window */
+	SDL_DestroyWindow(instance.window);
+	instance.window = NULL;
+	/* Free resources and Quit SDL subsystems */
+	SDL_Quit();
+
 	return (0);
 }

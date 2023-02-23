@@ -23,7 +23,7 @@ void generate_map(Vector object, double rayDirX, double rayDirY,
 				int *mapX, int *mapY, double deltaDistX, double deltaDistY,
 				ColorRGBA *color, int *side, int *hit)
 {
-	int worldMap[24][24] = {
+	int worldMap[MAP_WIDTH][MAP_HEIGHT] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},

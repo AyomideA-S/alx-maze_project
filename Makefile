@@ -2,7 +2,9 @@
 CC = gcc
 
 # SRC specifies the .c files
-SRC = src/main.c src/window.c
+SRC = src/main.c src/window.c src/raycaster.c src/SDL_subfunctions.c \
+	src/colors.c src/angles.c src/color_arithmetic.c src/map.c \
+	src/color_operations.c src/draw_all_things.c src/draw_to_screen.c
 
 # OBJ specifies the .o files
 OBJ = $(SRC:.c=.o)
@@ -13,8 +15,11 @@ NAME = 'The Maze Project'
 # RM specifies the program to delete files
 RM = rm -f
 
+# SDL2 runs the sdl2-config program with the necessary flags
+SDL2 := $$(sdl2-config --cflags --libs)
+
 # CFLAGS specifies your favorite compiler flags
-CFLAGS = -Wall -Werror -Wextra -pedantic -lSDL2main -lSDL2
+CFLAGS = -Wall -Werror -Wextra -pedantic
 
 # LFLAGS specifies the linker flags
 # LFLAGS =
@@ -26,7 +31,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -lSDL2main -lSDL2
 # This rule builds our executable
 # Makefile should not compile if the header file main.h is missing
 all: include/main.h $(OBJ)
-	$(CC) $(OBJ) $(CFLAGS) -o $(NAME)
+	$(CC) $(OBJ) $(CFLAGS) $(SDL2) -o $(NAME)
 
 # This rule deletes all Emacs and Vim temporary files along with the executable
 clean:

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-make all -f Makefile
+make re -f Makefile
 make oclean -f Makefile

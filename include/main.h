@@ -16,11 +16,18 @@
 #define PLAYER_HEIGHT 32
 #define FOV 66
 
+/* Boolean values */
+#define false 0
+#define true 1
+
+typedef _Bool bool;
+
 /**
  * struct SDL_Instance - Typedef for struct of type SDL_Instance
- * @window: SDL Window
+ * @window: SDL Window we'll be rendering to
  * @renderer: SDL Renderer
- * @screenSurface: SDL Screen Surface
+ * @screenSurface: SDL Screen Surface contained by the window
+ * @image: The image we will load and show on the screen
  *
  * Description: A struct for the SDL_Instance.
  */
@@ -29,15 +36,21 @@ typedef struct SDL_Instance
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	SDL_Surface *screenSurface;
+	SDL_Surface *image;
 } SDL_Instance;
 
-int init_instance(SDL_Instance *instance);
+_Bool initialize_SDL(SDL_Instance *instance);
+void keep_window(void);
+void colorFill(SDL_Instance *instance, char *color_name);
+_Bool loadMedia(SDL_Instance *instance, char *media_path);
+void draw_image(SDL_Instance *instance);
+void draw_something(SDL_Instance *instance);
+
 int raycaster(Vector object, double *time, double *oldTime,
 			SDL_Instance *instance);
 void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
 		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
 		int stepY, int (*worldMap)[MAP_WIDTH]);
-void draw_something(SDL_Instance instance);
 int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance);
 int fps_count(double *time, double *oldTime);
 unsigned long getTicks(void);
