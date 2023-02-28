@@ -30,7 +30,7 @@ int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance)
 		y2 = SCREEN_HEIGHT - 1; /* clip */
 
 	Uint32 colorSDL = SDL_MapRGBA(scr->format, color->red, color->green,
-								color->blue, (int) (255 * color->alpha));
+								color->blue, (Uint8) (255 * color->alpha));
 	Uint32 *bufp;
 
 	bufp = (Uint32 *)scr->pixels + y1 * scr->pitch / 4 + x;
@@ -60,11 +60,25 @@ int fps_count(double *time, double *oldTime)
 	/* frameTime is the time this frame has taken, in seconds */
 	double frameTime = (*time - *oldTime) / 1000.0;
 
-	printf("%lf", 1.0 / frameTime); /* FPS counter */
+	fprintf(stderr, "Frame rate: %lf FPS\n", 1.0 / frameTime); /* FPS counter */
 
 	/* speed modifiers */
 	/*double moveSpeed = frameTime * 5.0;*//*constant value in squares/second*/
 	/* double rotSpeed = frameTime * 3.0; */ /* the constant value in rads/s */
 
 	return (frameTime);
+}
+
+/**
+ * cls - A function to clear the screen and set its color to black
+ *
+ * @scr: SDL Screen Surface contained by the window
+ */
+void cls(SDL_Surface *scr)
+{
+	ColorRGBA color = rgba_color_code("black");
+	Uint32 color_value = SDL_MapRGBA(scr->format, color.red, color.green,
+									color.blue, (Uint8) (255 * color.alpha));
+
+	SDL_FillRect(scr, NULL, color_value);
 }

@@ -7,11 +7,17 @@
  * @time: Time of current frame
  * @oldTime: Time of previous frame
  * @instance: struct of type SDL_Instance
+ * @event: An SDL Event
+ * @delay: The delay flag (true or false)
+ * @keys: A boolean array to store key states
  * Return: 0 (Success)
  */
 int raycaster(Vector object, double *time, double *oldTime,
-			SDL_Instance *instance)
+			SDL_Instance *instance, SDL_Event *event, bool delay,
+			const unsigned char *keys)
 {
+	while (!done(event, delay, keys))
+		break;
 	for (int x = 0; x < SCREEN_WIDTH; x++)
 	{
 		/* calculate ray position and direction */
@@ -21,28 +27,34 @@ int raycaster(Vector object, double *time, double *oldTime,
 		/* length of ray from one x or y-side to next x or y-side */
 		double deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
 		double deltaDistY = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirY);
-		/* which box of the map we're in */
-		int mapX = floor(object.posX);
-		int mapY = floor(object.posY);
+		int mapX = floor(object.posX); /* which box of the map we're in */
+		int mapY = floor(object.posY); /* which box of the map we're in */
 		/* length of ray from current position to next x or y-side */
 		double sideDistX, sideDistY, perpWallDist;
 		/* what direction to step in x or y-direction (either +1 or -1) */
-		int stepX, stepY;
+		int stepX = 0;
+		int stepY = 0;
 		int hit = 0; /* was there a wall hit? */
-		int side; /* was a NS or a EW wall hit? */
+		int side = 0; /* was a NS or a EW wall hit? */
 		ColorRGBA color; /* choose wall color */
-
+		int worldMap[MAP_WIDTH][MAP_HEIGHT];
 		/* World map */
-		generate_map(object, rayDirX, rayDirY, &sideDistX, &sideDistY, &stepX,
-			&stepY, &mapX, &mapY, deltaDistX, deltaDistY, &color, &side, &hit);
+		generate_map(worldMap);
+		calculate_distances(object, rayDirX, rayDirY, &sideDistX,
+			&sideDistY, &stepX, &stepY, mapX, mapY, deltaDistX, deltaDistY);
+		DDA(&hit, &side, &sideDistX, &sideDistY, deltaDistX, deltaDistY,
+			&mapX, &mapY, stepX, stepY, worldMap);
 		Projection pixels = calcuate_projection(side, sideDistX, sideDistY,
-							deltaDistX, deltaDistY, &perpWallDist);
+									deltaDistX, deltaDistY, &perpWallDist);
+		color_walls(worldMap, mapX, mapY, &color, side);
 		int drawStart = pixels.drawStart;
 		int drawEnd = pixels.drawEnd;
 		/* draw the pixels of the stripe as a vertical line */
-		verLine(x, drawStart, drawEnd, &color, instance);
-		fps_count(time, oldTime);
+		/* verLine(x, drawStart, drawEnd, &color, instance); */
+		drawMiniMap(worldMap, instance, object);
 	}
+	fps_count(time, oldTime);
+	/* cls(instance->screenSurface); */
 	return (0);
 }
 

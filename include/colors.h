@@ -12,9 +12,9 @@
  */
 typedef struct ColorRGBA
 {
-	int red;
-	int green;
-	int blue;
+	Uint8 red;
+	Uint8 green;
+	Uint8 blue;
 	float alpha;
 } ColorRGBA;
 

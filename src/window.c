@@ -8,17 +8,15 @@
  */
 bool initialize_SDL(SDL_Instance *instance)
 {
-	/* Initialization flag */
 	bool success = true;
 	/* Initialize SDL */
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		fprintf(stderr, "Failed to initialize SDL! SDL_Error: %s\n",
 				SDL_GetError());
-				success = false;
+		success = false;
 	} else
 	{
-		/* Create window */
 		instance->window = SDL_CreateWindow("The Maze Project",
 							SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 							SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -26,13 +24,22 @@ bool initialize_SDL(SDL_Instance *instance)
 		{
 			fprintf(stderr, "SDL failed to create Window! SDL_Error: %s\n",
 					SDL_GetError());
+			SDL_Quit();
 			success = false;
 		} else
 		{
-			/* Get window surface */
-			instance->screenSurface = SDL_GetWindowSurface(instance->window);
+			/*instance->screenSurface=SDL_GetWindowSurface(instance->window);*/
+			instance->renderer = SDL_CreateRenderer(instance->window, -1,
+						SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if (instance->renderer == NULL)
+			{
+				fprintf(stderr, "Failed to create Renderer! SDL_Error: %s\n",
+						SDL_GetError());
+				SDL_Quit();
+				success = false;
+			}
 			/* Color the screen surface */
-			colorFill(instance, "black");
+			/* colorFill(instance, "black"); */
 		}
 	}
 	return (success);
@@ -51,9 +58,26 @@ void keep_window(void)
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
-			quit = true;
+				quit = true;
 		}
 	}
+}
+
+/**
+ * end - A funtion to free resources and Quit SDL subsystems.
+ *
+ * @instance: An SDL instance of type struct SDL_Instance
+ */
+void end(SDL_Instance *instance)
+{
+	/* Deallocate surface */
+	SDL_FreeSurface(instance->image);
+	instance->image = NULL;
+	/* Destroy window */
+	SDL_DestroyWindow(instance->window);
+	instance->window = NULL;
+	/* Free resources and Quit SDL subsystems */
+	SDL_Quit();
 }
 
 /**
@@ -70,7 +94,7 @@ void colorFill(SDL_Instance *instance, char *color_name)
 	SDL_FillRect(instance->screenSurface, NULL,
 				SDL_MapRGBA(instance->screenSurface->format,
 				fill_color.red, fill_color.green, fill_color.blue,
-				255 * fill_color.alpha));
+				(Uint8) (255 * fill_color.alpha)));
 	/* Update the surface */
 	SDL_UpdateWindowSurface(instance->window);
 }
