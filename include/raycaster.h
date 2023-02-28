@@ -42,7 +42,8 @@ void calculate_distances(Vector object, double rayDirX, double rayDirY,
 						double deltaDistY);
 Projection calcuate_projection(int side, double sideDistX, double sideDistY,
 						double deltaDistX, double deltaDistY,
-						double *perpWallDist);
+						double *perpWallDist, int *wall_height, int *wall_top,
+						int *wall_bottom);
 int fps_count(double *time, double *oldTime);
 unsigned long getTicks(void);
 void cls(SDL_Surface *scr);

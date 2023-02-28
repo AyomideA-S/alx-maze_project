@@ -77,3 +77,40 @@ void color_walls(int (*worldMap)[MAP_WIDTH], int mapX, int mapY,
 	if (side == 1)
 		rgba_div(color, 2, 1.0);
 }
+
+/**
+ * color_wall - Assigns a color code to each integer case
+ *
+ * @wall_code: An integer value for the wall
+ * @side: Side of the wall that was hit (NS or EW)
+ * Return: A struct of type ColorRGBA for the requested color
+ */
+ColorRGBA color_wall(int wall_code, int side)
+{
+	ColorRGBA color;
+
+	switch (wall_code)
+	{
+		case 1:
+			color = rgba_color_code("red");
+			break;
+		case 2:
+			color = rgba_color_code("green");
+			break;
+		case 3:
+			color = rgba_color_code("blue");
+			break;
+		case 4:
+			color = rgba_color_code("white");
+			break;
+		default:
+			color = rgba_color_code("yellow");
+			break;
+	}
+
+	/* give x and y sides different brightness */
+	if (side == 1)
+		rgba_div(&color, 2, 1.0);
+
+	return (color);
+}

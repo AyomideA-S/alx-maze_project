@@ -20,41 +20,37 @@ int raycaster(Vector object, double *time, double *oldTime,
 		break;
 	for (int x = 0; x < SCREEN_WIDTH; x++)
 	{
-		/* calculate ray position and direction */
-		double cameraX = 2 * x / SCREEN_WIDTH - 1; /* x-coord in camera space */
+		/* x-coord in camera space */
+		double cameraX = 2 * x / SCREEN_WIDTH - 1;
+		/* Calculate ray direction vector */
 		double rayDirX = object.dirX + object.planeX * cameraX;
 		double rayDirY = object.dirY + object.planeY * cameraX;
-		/* length of ray from one x or y-side to next x or y-side */
+		/* Calculate map position of ray origin */
+		int mapX = floor(object.posX);
+		int mapY = floor(object.posY);
+		/* Calculate distance to next x and y grid lines */
 		double deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
 		double deltaDistY = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirY);
-		int mapX = floor(object.posX); /* which box of the map we're in */
-		int mapY = floor(object.posY); /* which box of the map we're in */
-		/* length of ray from current position to next x or y-side */
+		/* Calculate initial step and side distances */
 		double sideDistX, sideDistY, perpWallDist;
-		/* what direction to step in x or y-direction (either +1 or -1) */
-		int stepX = 0;
-		int stepY = 0;
-		int hit = 0; /* was there a wall hit? */
+		int stepX, stepY, wall_height, wall_top, wall_bottom;
+		int hit = 0;
 		int side = 0; /* was a NS or a EW wall hit? */
-		ColorRGBA color; /* choose wall color */
 		int worldMap[MAP_WIDTH][MAP_HEIGHT];
 		/* World map */
 		generate_map(worldMap);
 		calculate_distances(object, rayDirX, rayDirY, &sideDistX,
 			&sideDistY, &stepX, &stepY, mapX, mapY, deltaDistX, deltaDistY);
-		DDA(&hit, &side, &sideDistX, &sideDistY, deltaDistX, deltaDistY,
-			&mapX, &mapY, stepX, stepY, worldMap);
-		Projection pixels = calcuate_projection(side, sideDistX, sideDistY,
-									deltaDistX, deltaDistY, &perpWallDist);
-		color_walls(worldMap, mapX, mapY, &color, side);
-		int drawStart = pixels.drawStart;
-		int drawEnd = pixels.drawEnd;
-		/* draw the pixels of the stripe as a vertical line */
-		/* verLine(x, drawStart, drawEnd, &color, instance); */
-		drawMiniMap(worldMap, instance, object);
+		int wall_code = DDA(&hit, &side, &sideDistX, &sideDistY, deltaDistX,
+							deltaDistY, &mapX, &mapY, stepX, stepY, worldMap);
+
+		calcuate_projection(side, sideDistX, sideDistY,	deltaDistX, deltaDistY,
+						&perpWallDist, &wall_height, &wall_top, &wall_bottom);
+		render_walls(instance->renderer, wall_top, wall_bottom, wall_code, side, x);
+		/* drawMiniMap(worldMap, instance, object); */
 	}
 	fps_count(time, oldTime);
-	/* cls(instance->screenSurface); */
+
 	return (0);
 }
 
@@ -79,6 +75,8 @@ void calculate_distances(Vector object, double rayDirX, double rayDirY,
 						int *stepY, int mapX, int mapY, double deltaDistX,
 						double deltaDistY)
 {
+	*stepX = 0;
+	*stepY = 0;
 	/* calculate step and initial sideDist */
 	if (rayDirX < 0)
 	{
@@ -115,31 +113,32 @@ void calculate_distances(Vector object, double rayDirX, double rayDirY,
  * @stepX: What direction to step in x-axis (either +1 or -1)
  * @stepY: What direction to step in y-axis (either +1 or -1)
  * @worldMap: A 2-dimensional array of integer values
+ * Return: Code of the wall if wall was hit else 0
  */
-void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
+int DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
 		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
 		int stepY, int (*worldMap)[MAP_WIDTH])
 {
 	/* perform DDA */
 	while (*hit == 0)
 	{
-		/* jump to next map square, either in x-axis, or in y-axis*/
+		/* Move to next grid cell */
 		if (*sideDistX < *sideDistY)
 		{
 			*sideDistX += deltaDistX;
 			*mapX += stepX;
+			*hit = worldMap[*mapX][*mapY];
 			*side = 0;
 		} else
 		{
 			*sideDistY += deltaDistY;
 			*mapY += stepY;
+			*hit = worldMap[*mapX][*mapY];
 			*side = 1;
 		}
-
-		/* Check if ray has hit a wall */
-		if (worldMap[*mapX][*mapY] > 0)
-			*hit = 1;
 	}
+
+	return (*hit);
 }
 
 /**
@@ -152,11 +151,15 @@ void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
  * @deltaDistX: Length of ray from one point to another on x-axis
  * @deltaDistY: Length of ray from one point to another on y-axis
  * @perpWallDist: Perpendicular distance from ray to wall
+ * @wall_height: Height of the wall
+ * @wall_top: Top of the wall
+ * @wall_bottom: Bottom of the wall
  * Return: struct of type Projection
  */
 Projection calcuate_projection(int side, double sideDistX, double sideDistY,
 						double deltaDistX, double deltaDistY,
-						double *perpWallDist)
+						double *perpWallDist, int *wall_height, int *wall_top,
+						int *wall_bottom)
 {
 	Projection pixel_coordinates;
 
@@ -183,6 +186,16 @@ Projection calcuate_projection(int side, double sideDistX, double sideDistY,
 
 	pixel_coordinates.drawStart = drawStart;
 	pixel_coordinates.drawEnd = drawEnd;
+
+	/* Calculate wall height on screen */
+	*wall_height = (int)(SCREEN_HEIGHT / *perpWallDist);
+
+	/* Calculate top and bottom pixels of wall on screen */
+	*wall_top = SCREEN_HEIGHT / 2 - *wall_height / 2;
+	*wall_bottom = *wall_top + *wall_height;
+
+	if (*wall_top < 0 && *wall_bottom)
+		*wall_top = 0;
 
 	return (pixel_coordinates);
 }

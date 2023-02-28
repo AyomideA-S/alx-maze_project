@@ -82,3 +82,32 @@ void cls(SDL_Surface *scr)
 
 	SDL_FillRect(scr, NULL, color_value);
 }
+
+/**
+ * render_walls - A function to render the walls on the screen.
+ *
+ * @renderer: The renderer of the window
+ * @wall_top: The coordinate of the first vertical column to be drawn
+ * @wall_bottom: The coordinate of the last vertical column to be drawn
+ * @wall_code: The code of the wall to be drawn
+ * @side: The side of the wall to be drawn
+ * @x: The column iterator
+ */
+void render_walls(SDL_Renderer *renderer, int wall_top, int wall_bottom,
+				int wall_code, int side, int x)
+{
+	/* Render wall strip on screen */
+	for (int y = 0; y < SCREEN_HEIGHT; y++)
+	{
+		if (y < wall_top)
+			continue;
+		if (y >= wall_bottom)
+			break;
+
+		ColorRGBA color = color_wall(wall_code, side);
+
+		SDL_SetRenderDrawColor(renderer, color.red, color.green, color.blue,
+								(Uint8) (255 * color.alpha));
+		SDL_RenderDrawPoint(renderer, x, y);
+	}
+}

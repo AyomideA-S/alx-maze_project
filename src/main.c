@@ -13,6 +13,7 @@ int main(void)
 	Vector player;
 	double time = 0; /* time of current frame */
 	double oldTime = 0; /* time of previous frame */
+	_Bool quit = false; /* the quit flag */
 
 	player.dirX = -1;
 	player.dirY = 0;
@@ -27,14 +28,19 @@ int main(void)
 		fprintf(stderr, "Failed to initialize!\n");
 	} else
 	{
-		SDL_SetRenderDrawColor(instance.renderer, 0x0, 0x0, 0x0, 0x0);
-		SDL_RenderClear(instance.renderer);
-		raycaster(player, &time, &oldTime, &instance, &event, true,
-				  keys);
-		SDL_RenderPresent(instance.renderer);
-		/* Hack to get window to stay up */
-		keep_window();
+		while (!quit)
+		{
+			SDL_SetRenderDrawColor(instance.renderer, 0x0, 0x0, 0x0, 0x0);
+			SDL_RenderClear(instance.renderer);
+			if (poll_events() == 1)
+				break;
+			raycaster(player, &time, &oldTime, &instance, &event, true,
+					keys);
+			SDL_RenderPresent(instance.renderer);
+			/* Hack to get window to stay up */
+			keep_window(&quit);
+		}
+		end(&instance);
 	}
-	end(&instance);
 	return (0);
 }

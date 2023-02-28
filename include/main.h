@@ -45,12 +45,13 @@ typedef struct SDL_Instance
 } SDL_Instance;
 
 _Bool initialize_SDL(SDL_Instance *instance);
-void keep_window(void);
+void keep_window(bool *quit);
 void colorFill(SDL_Instance *instance, char *color_name);
 void end(SDL_Instance *instance);
 _Bool loadMedia(SDL_Instance *instance, char *media_path);
 _Bool done(SDL_Event *event, bool delay, const unsigned char *keys);
 void readKeys(const unsigned char *keys);
+int poll_events(void);
 
 void draw_image(SDL_Instance *instance);
 void draw_something(SDL_Instance *instance);
@@ -75,7 +76,7 @@ void drawMiniMap(int (*WorldMap)[MAP_WIDTH], SDL_Instance *instance,
 int raycaster(Vector object, double *time, double *oldTime,
 			SDL_Instance *instance, SDL_Event *event, bool delay,
 			const unsigned char *keys);
-void DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
+int DDA(int *hit, int *side, double *sideDistX, double *sideDistY,
 		double deltaDistX, double deltaDistY, int *mapX, int *mapY, int stepX,
 		int stepY, int (*worldMap)[MAP_WIDTH]);
 int verLine(int x, int y1, int y2, ColorRGBA *color, SDL_Instance *instance);

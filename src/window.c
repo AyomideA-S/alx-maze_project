@@ -47,24 +47,28 @@ bool initialize_SDL(SDL_Instance *instance)
 
 /**
  * keep_window - A function to keep the SDL window open.
+ *
+ * @quit: A boolean flag to keep the window open
  */
-void keep_window(void)
+void keep_window(bool *quit)
 {
 	SDL_Event event;
-	bool quit = false;
 
-	while (quit == false)
+	while (*quit == false)
 	{
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_QUIT)
-				quit = true;
+			{
+				*quit = true;
+				break;
+			}
 		}
 	}
 }
 
 /**
- * end - A funtion to free resources and Quit SDL subsystems.
+ * end - A funtion to free resources and quit SDL subsystems.
  *
  * @instance: An SDL instance of type struct SDL_Instance
  */
@@ -73,6 +77,12 @@ void end(SDL_Instance *instance)
 	/* Deallocate surface */
 	SDL_FreeSurface(instance->image);
 	instance->image = NULL;
+	/* Deallocate screen surface */
+	SDL_FreeSurface(instance->screenSurface);
+	instance->screenSurface = NULL;
+	/* Destroy Renderer */
+	SDL_DestroyRenderer(instance->renderer);
+	instance->renderer = NULL;
 	/* Destroy window */
 	SDL_DestroyWindow(instance->window);
 	instance->window = NULL;

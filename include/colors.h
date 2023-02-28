@@ -29,4 +29,6 @@ ColorRGBA rgba_color_div(ColorRGBA color1, ColorRGBA color2);
 void rgba_div(ColorRGBA *color, int n, float a);
 int rgba_color_comp(ColorRGBA color1, ColorRGBA color2);
 
+ColorRGBA color_wall(int wall_code,	int side);
+
 #endif /* _COLORS_H_ */
