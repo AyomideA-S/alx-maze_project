@@ -1,3 +1,5 @@
+
+
 # alx-maze_project
 This is the alternative 'Maze project' for the 'Research &amp; Project approval (Part 1)' project in the ALX Software Engineering program.
 
@@ -96,3 +98,14 @@ The goal of this project is to create a game in 3D using raycasting !
 14. Extra option
 
     Shadows, special lightning, etc… get creative!
+
+## Build and Run
+
+To compile the project, run the following command:
+```bash
+gcc src/*.c -Wall -Werror -Wextra -pedantic $(sdl2-config --cflags --libs) -o 'The Maze Project'
+```
+Execute the game with:
+```bash
+./The\ Maze\ Project
+```
